@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using NuGet.ProjectModel;
+using System.Drawing.Printing;
 
 namespace BlogProject.Controllers;
 
@@ -17,27 +18,26 @@ public class HomeController : Controller
         _context = context;
     }
     [HttpGet]
-    public IActionResult Index(string SearchTerm)
+    public IActionResult Index(string SearchTerm, int PageSize = 3, int PageNumber = 1)
     {
-        ViewData["SearchTerm"] = SearchTerm;
-        if (SearchTerm != null)
-        {
-            Console.WriteLine("SearchTerm is " + SearchTerm);
-            var blogs = _context.Blogs.Include(b => b.Genres)
-                                        .Where(b => b.Title.Contains(SearchTerm)
-                                                    || b.Genres.Any(g => g.Name.Contains(SearchTerm)))
-                                        .ToList();
-            if (blogs != null)
-            {
-                return View(blogs);
-            }
-           
-        }
 
-        var records = _context.Blogs
-           .Include(b => b.Genres);
-        Console.WriteLine("Executing the records without the searchterm ");
-        return View(records);
+        var PaginatedBlogs = _context.BlogsGenreDetails
+                                    .FromSqlRaw("Exec SP_PaginatedSeachResult @p0, @p1, @p2", SearchTerm, PageSize, PageNumber)
+                                    .ToList();
+
+
+        int totalRecordsCount = _context.Database
+                            .SqlQuery<int>($"Exec SP_TotalPageCOunt {SearchTerm}")
+                            .AsEnumerable()
+                            .FirstOrDefault();
+        var TotalPages = (int)Math.Ceiling((double)totalRecordsCount / PageSize);
+
+        ViewBag.TotalPages = TotalPages;
+        ViewBag.SearchTerm = SearchTerm;
+        ViewBag.PageSize = PageSize;
+        ViewBag.PageNumber = PageNumber;
+
+        return View(PaginatedBlogs);
     }
     public async Task<IActionResult> Details(int id)
     {

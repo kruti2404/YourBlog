@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Blogs>
+﻿@model IEnumerable<BlogsGenreDetails>
 @{
 	ViewData["Title"] = "Home Page";
 
@@ -16,7 +16,7 @@
 		<form asp-action="Index" asp-controller="Home" method="get">
 			<div class="row justify-content-center m-4">
 				<div class="search-container">
-					<input type="text" class="form-control search-input" placeholder="Search..." name="SearchTerm" value="@ViewData["SearchTerm"]" />
+					<input type="text" class="form-control search-input" placeholder="Search..." name="SearchTerm" value="@ViewBag.SearchTerm" />
 					<i class="fas fa-search search-icon"></i>
 				</div>
 			</div>
@@ -47,11 +47,15 @@
 								</p>
 								<p>
 									<strong>Genres:</strong>
-									@if (blog.Genres.Any())
+
+									@if (blog.GenreName.Any())
 									{
-										@foreach (var genre in blog.Genres)
+										Console.WriteLine(blog.GenreName);
+										var genresList = blog.GenreName.Split(",");
+										Console.WriteLine(genresList[0]);
+										@foreach (var names in genresList)
 										{
-											<span class="badge bg-primary">@genre.Name</span>
+											<span class="badge bg-primary">@names</span>
 										}
 									}
 									else
@@ -66,6 +70,45 @@
 				}
 			</div>
 		</div>
+
+
+		<nav aria-label="Page navigation">
+			<ul class="pagination pagination-gradient justify-content-center">
+				<li class="page-item @(ViewBag.PageNumber <= 1 ? "disabled" : "")">
+					<a class="page-link"
+					   asp-route-PageNumber="@(ViewBag.PageNumber - 1)"
+					   asp-route-PageSize="@ViewBag.PageSize">
+						<i class="fas fa-chevron-left"></i>
+					</a>
+				</li>
+
+
+
+
+				@for (int i = 1; i <= ViewBag.TotalPages; i++)
+				{
+					<li class="page-item @(ViewBag.PageNumber == i ? "active" : "")">
+						<a class="page-link"
+						   asp-route-PageNumber="@i"
+						   asp-route-PageSize="@ViewBag.PageSize"
+						   asp-route-SearchTerm="@ViewBag.SearchTerm">
+							@i
+						</a>
+					</li>
+				}
+
+
+
+				<li class="page-item @(ViewBag.PageNumber >= ViewBag.TotalPages ? "disabled" : "")">
+					<a class="page-link"
+					   asp-route-PageNumber="@(ViewBag.PageNumber + 1)"
+					   asp-route-PageSize="@ViewBag.PageSize">
+						<i class="fas fa-chevron-right"></i>
+					</a>
+				</li>
+
+			</ul>
+		</nav>
 	</div>
 
 }
