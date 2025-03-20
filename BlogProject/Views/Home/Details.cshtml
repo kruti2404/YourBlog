@@ -1,0 +1,35 @@
+﻿@model BlogProject.Models.Blogs
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-5">
+    <div class="card">
+        @if (Model.Image != null)
+        {
+            <img src="data:image/jpeg;base64,@(Convert.ToBase64String(Model.Image))" class="card-img-top" alt="Blog Image">
+        }
+        <div class="card-body">
+            <h2 class="card-title">@Model.Title</h2>
+            <p class="text-muted">Published on: @Model.CreatedAt.ToString()</p>
+            <hr />
+            <p class="card-text">@Model.Content</p>
+            <p>
+                <strong>Genres:</strong>
+                @if (Model.Genres.Any())
+                {
+                    @foreach (var genre in Model.Genres)
+                    {
+                        <span class="badge bg-primary">@genre.Name</span>
+                    }
+                }
+                else
+                {
+                    <span class="text-muted">No genre assigned</span>
+                }
+            </p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Blogs</a>
+        </div>
+    </div>
+</div>
