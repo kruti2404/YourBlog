@@ -19,6 +19,7 @@ namespace BlogProject.Models
         public byte[]? Image { get; set; }
 
         public virtual ICollection<Genre> Genres { get; set; }
+        public virtual ICollection<Likes>? Likes { get; set; }
         public virtual ICollection<Blogcomments>? Comments { get; set; }
 
     }

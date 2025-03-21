@@ -9,5 +9,8 @@
         public string Password { get; set; }
         public string? Role { get; set; }
         public virtual ICollection<Blogs>? Blogs { get; set; }
+        public virtual ICollection<Likes>? Likes { get; set; }
+        public ICollection<Blogcomments>? Comments { get; set; }
+
     }
 }

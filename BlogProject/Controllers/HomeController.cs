@@ -32,13 +32,13 @@ public class HomeController : Controller
 
 
         var PaginatedBlogs = _context.Database
-                                    .SqlQueryRaw<BlogsGenreDetails>("Exec SP_PaginatedSeachResult @SearchTerm, @PageSize, @PageNumber, @TotalRecords OUTPUT", 
+                                    .SqlQueryRaw<BlogsGenreDetails>("Exec SP_PaginatedSeachResult @SearchTerm, @PageSize, @PageNumber, @TotalRecords OUTPUT",
                                     new SqlParameter("@SearchTerm", SearchTerm ?? (object)DBNull.Value), new SqlParameter("@PageSize", PageSize), new SqlParameter("@PageNumber", PageNumber), totalRecordsParam)
                                     .ToList();
 
         //Console.WriteLine(PaginatedBlogs)
         int totalRecordsCount = (int)totalRecordsParam.Value;
-        Console.WriteLine(totalRecordsCount);
+        //Console.WriteLine(totalRecordsCount);
         var TotalPages = (int)Math.Ceiling((double)totalRecordsCount / PageSize);
 
         ViewBag.TotalPages = TotalPages;
@@ -50,7 +50,7 @@ public class HomeController : Controller
     }
     public async Task<IActionResult> Details(int id)
     {
-        Console.WriteLine($"Blog ID received: {id}");
+        //Console.WriteLine($"Blog ID received: {id}");
 
         var records = await _context.Blogs
             .Include(b => b.Genres)

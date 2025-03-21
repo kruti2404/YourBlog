@@ -52,7 +52,7 @@ namespace BlogProject.Controllers
                 ModelState.AddModelError(string.Empty, "Invalid UserName or Password");
                 return View(user);
             }
-
+            Console.WriteLine("Gated user name " + GatedUSer.UserName + " " + GatedUSer.Password);
             if (GatedUSer.UserName == user.UserName && user.Password == GatedUSer.Password)
             {
                 var token = _service.GenerateToken(GatedUSer);

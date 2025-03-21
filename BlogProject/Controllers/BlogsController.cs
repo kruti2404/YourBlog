@@ -71,11 +71,16 @@ namespace BlogsProject.Controllers
             var records = await _context.Blogs
                 .Include(b => b.Genres)
                 .Include(b => b.Comments)
+                .Include(b => b.Likes)
                 .FirstOrDefaultAsync(b => b.Id == id);
             if (records == null)
             {
                 return NotFound();
             }
+            var UserId = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            var isLiked = records.Likes.Any(l => l.UserId == UserId);
+
+            ViewBag.IsLiked = isLiked;
 
             return View(records);
         }
@@ -101,10 +106,37 @@ namespace BlogsProject.Controllers
             return RedirectToAction("Details", new { id = BlogId });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Like(int BlogId, int UserId)
+        {
+            Console.WriteLine("Like Page : with " + BlogId + " And User id : " + UserId);
+
+            var existing = await _context.Likes.FirstOrDefaultAsync(l => l.UserId == UserId && l.BlogId == BlogId);
+
+            if (existing == null)
+            {
+                var like = new Likes
+                {
+                    BlogId = BlogId,
+                    UserId = UserId,
+                    IsActive = true,
+                    LikedAt = DateTime.Now
+                };
+                await _context.Likes.AddAsync(like);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, liked = true, message = "Liked successfully!" });
+            }
+            else
+            {
+                _context.Likes.Remove(existing);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, liked = false, message = "Unliked successfully!" });
+            }
+        }
         public async Task<IActionResult> OwnBlogs()
         {
             var Id = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
-            //int Id = (UserId);
+
             Console.WriteLine("UserID: " + Id);
             var records = await _BlogsRepository.GetAll();
             var blogs = await _context.Blogs
@@ -114,8 +146,7 @@ namespace BlogsProject.Controllers
             var blogsDic = blogs.ToDictionary(x => x.Id, x => x.Genres);
 
             return View(blogs);
-            //var record = _context.Blogs.Include(u => u.UserId).ToList();
-            //return View(records);
+
         }
 
         // GET: Blogs1/Create

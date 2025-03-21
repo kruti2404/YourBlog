@@ -1,4 +1,5 @@
-﻿@model BlogProject.Models.Blogs
+﻿@using System.Security.Claims
+@model BlogProject.Models.Blogs
 
 @{
 	Layout = "~/Views/Shared/_UserLayout.cshtml";
@@ -40,11 +41,26 @@
 			@* Comment Section  *@
 			<div class="container align-content-start">
 				<div class="comment-section">
-					<svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="currentColor" class="bi bi-chat-square-text-fill" viewBox="0 0 16 16">
-						<path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z" />
-					</svg>
+					<div class="comment-like-container">
+						<div class="Comment-btn">
+							<svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="currentColor" class="bi bi-chat-square-text-fill" viewBox="0 0 16 16">
+								<path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z" />
+							</svg>
+						</div>
 
-					<!-- New Comment Form -->
+
+						@{
+							var UserID = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+						}
+
+						<button class="like-btn @(ViewBag.IsLiked ? "liked" : "")" data-blog-id="@Model.Id" data-user-id="@UserID" data-url="@Url.Action("Like", "Blogs")">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gray" class="bi bi-heart-fill" viewBox="0 0 16 16">
+								<path class="outline" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314" />
+							</svg>
+
+						</button>
+					</div>
 
 					<div class="mb-4">
 						<div class="d-flex gap-3">
@@ -64,12 +80,8 @@
 					<div class="comments-list">
 						@if (Model.Comments != null && Model.Comments.Any())
 						{
-
 							@foreach (var comment in Model.Comments)
 							{
-								Console.WriteLine("Comments Are: " + comment);
-								Console.WriteLine("Comments Are: " + comment.CommentText);
-								Console.WriteLine(@comment.UserID);
 								<div class="comment-box">
 									<div class="d-flex gap-3">
 										<div class="flex-grow-1">
@@ -88,19 +100,70 @@
 						}
 						else
 						{
-							Console.WriteLine("No cooments ");
 							<div class="container ">
 								No Comments Yet
 							</div>
 						}
+
 					</div>
+
+
+
+
 				</div>
+				<a asp-controller="Blogs" asp-action="Index" class="btn btn-secondary">Back to Blogs</a>
 			</div>
-
-
-
-
-			<a asp-controller="Blogs" asp-action="Index" class="btn btn-secondary">Back to Blogs</a>
 		</div>
 	</div>
 </div>
+
+@section Scripts {
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script>
+
+				$(document).ready(function () {
+			$(".like-btn").click(function () {
+				var button = $(this);
+				var BlogId = button.data("blog-id");
+				var UserId = button.data("user-id");
+				var url = button.data("url");
+
+				var svg = button.find("svg");
+				 var path = svg.find("path");
+
+
+				$.ajax({
+					type: "POST",
+					url: url,
+					data: { BlogId: BlogId, UserId: UserId },
+					success: function (response) {
+						if (response.success) {
+							if (response.liked) {
+								button.addClass("liked");
+								path.attr("fill", "red");
+							} else {
+								button.removeClass("liked");
+								path.attr("fill", "gray");
+							}
+							alert(response.message);
+						} else {
+							alert(response.message || "Failed to like the post.");
+						}
+					},
+					error: function (xhr, status, error) {
+						console.error("Error:", xhr.responseText);
+					}
+				});
+			});
+		});
+
+
+
+	</script>
+		}
+
+
+
+
+
