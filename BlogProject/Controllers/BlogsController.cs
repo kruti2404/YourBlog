@@ -11,6 +11,8 @@ using BlogProject.Repository;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using BlogProject.Data;
+using Microsoft.Data.SqlClient;
+using System.Drawing.Printing;
 
 namespace BlogsProject.Controllers
 {
@@ -30,40 +32,96 @@ namespace BlogsProject.Controllers
         }
 
         // GET: Blogs1
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string SearchTerm, int PageSize = 3, int PageNumber = 1)
         {
-            var records = await _BlogsRepository.GetAll();
-            var blogs = await _context.Blogs
-                                   .Include(b => b.Genres) // Ensure Genres are loaded
-                                   .ToListAsync();
-            var blogsDic = blogs.ToDictionary(x => x.Id, x => x.Genres);
-            
-            return View(blogs);
-            //var record = _context.Blogs.Include(u => u.UserId).ToList();
-            //return View(records);
+
+            var totalRecordsParam = new SqlParameter
+            {
+                ParameterName = "@TotalRecords",
+                DbType = System.Data.DbType.Int32,
+                Direction = System.Data.ParameterDirection.Output,
+                Size = sizeof(int)
+            };
+
+
+            var PaginatedBlogs = _context.Database
+                                        .SqlQueryRaw<BlogsGenreDetails>("Exec SP_PaginatedSeachResult @SearchTerm, @PageSize, @PageNumber, @TotalRecords OUTPUT",
+                                        new SqlParameter("@SearchTerm", SearchTerm ?? (object)DBNull.Value), new SqlParameter("@PageSize", PageSize), new SqlParameter("@PageNumber", PageNumber), totalRecordsParam)
+                                        .ToList();
+
+
+            int totalRecordsCount = (int)totalRecordsParam.Value;
+            Console.WriteLine(totalRecordsCount);
+            var TotalPages = (int)Math.Ceiling((double)totalRecordsCount / PageSize);
+
+            ViewBag.TotalPages = TotalPages;
+            ViewBag.SearchTerm = SearchTerm;
+            ViewBag.PageSize = PageSize;
+            ViewBag.PageNumber = PageNumber;
+
+            return View(PaginatedBlogs);
         }
 
         // GET: Blogs1/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+
+            Console.WriteLine($"Blog ID received: {id}");
+
+            var records = await _context.Blogs
+                .Include(b => b.Genres)
+                .Include(b => b.Comments)
+                .FirstOrDefaultAsync(b => b.Id == id);
+            if (records == null)
             {
                 return NotFound();
             }
 
-            var blogs = await _BlogsRepository.GetById(id);
-            if (blogs == null)
+            return View(records);
+        }
+        public async Task<IActionResult> AddComment(string CommentText, int BlogId)
+        {
+            if (string.IsNullOrWhiteSpace(CommentText))
             {
-                return NotFound();
+                return BadRequest("Comment cannot be empty");
             }
+
+            int UserID = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+
+            var comment = new Blogcomments();
+            comment.CreatedAt = DateTime.Now;
+            comment.BlogId = BlogId;
+            comment.UserID = UserID;
+            comment.CommentText = CommentText;
+
+            _context.Comments.Add(comment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", new { id = BlogId });
+        }
+
+        public async Task<IActionResult> OwnBlogs()
+        {
+            var Id = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            //int Id = (UserId);
+            Console.WriteLine("UserID: " + Id);
+            var records = await _BlogsRepository.GetAll();
+            var blogs = await _context.Blogs
+                                   .Include(b => b.Genres)
+                                   .Where(b => b.UserId == Id)
+                                   .ToListAsync();
+            var blogsDic = blogs.ToDictionary(x => x.Id, x => x.Genres);
 
             return View(blogs);
+            //var record = _context.Blogs.Include(u => u.UserId).ToList();
+            //return View(records);
         }
 
         // GET: Blogs1/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["Genres"] = new SelectList(await _GenreRepository.GetAll(), "Id", "Name");
+            ViewBag.Genres = new SelectList(await _GenreRepository.GetAll(), "Id", "Name");
             return View();
         }
 
@@ -148,7 +206,7 @@ namespace BlogsProject.Controllers
             }
             var existingBlog = _context.Blogs
                                          .Include(b => b.Genres)
-                                         .FirstOrDefault(b => b.Id==id);
+                                         .FirstOrDefault(b => b.Id == id);
             if (existingBlog == null)
             {
                 return NotFound();

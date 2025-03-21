@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<BlogsGenreDetails>
 @{
 	ViewData["Title"] = "Home Page";
-
+	// Console.WriteLine(Model);
 }
 
 @if (Model != null && Model.Any())
@@ -25,6 +25,7 @@
 			<div class="row">
 				@foreach (var blog in Model)
 				{
+					Console.WriteLine("Comments: " +blog.Comments + blog.Id );
 					<div class="col-md-4 mb-4">
 						<div class="card shadow-sm">
 							@if (blog.Image != null)

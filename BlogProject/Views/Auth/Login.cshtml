@@ -11,7 +11,7 @@
 				<div class="col-12 col-xl-10">
 					<div class="card">
 						<div class="card-body">
-
+							
 							<div class="row d-flex align-items-center">
 								<div class="col-md-6 col-xl-7">
 
@@ -24,7 +24,6 @@
 								<form method="post" class="col-md-6 col-xl-4 text-center" asp-action="Login" asp-controller="Auth">
 
 									<h2 class="fw-bold mb-4 pb-2">Member Login</h2>
-									v
 									<div data-mdb-input-init class="form-outline mb-3">
 										<input type="text" asp-for="UserName" class="form-control form-control-lg" />
 										<label class="form-label" asp-for="UserName">UserName</label>
@@ -56,6 +55,8 @@
 
 @section Scripts {
 
-	 	 @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
 
  }

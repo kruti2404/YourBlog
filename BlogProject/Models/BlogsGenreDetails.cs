@@ -13,5 +13,6 @@ namespace BlogProject.Models
 
         public byte[]? Image { get; set; }
         public string? GenreName { get; set; }
+        public string? Comments { get; set; }
     }
 }

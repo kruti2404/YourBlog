@@ -7,6 +7,7 @@ using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using NuGet.ProjectModel;
 using System.Drawing.Printing;
+using Microsoft.Data.SqlClient;
 
 namespace BlogProject.Controllers;
 
@@ -21,15 +22,23 @@ public class HomeController : Controller
     public IActionResult Index(string SearchTerm, int PageSize = 3, int PageNumber = 1)
     {
 
-        var PaginatedBlogs = _context.BlogsGenreDetails
-                                    .FromSqlRaw("Exec SP_PaginatedSeachResult @p0, @p1, @p2", SearchTerm, PageSize, PageNumber)
+        var totalRecordsParam = new SqlParameter
+        {
+            ParameterName = "@TotalRecords",
+            DbType = System.Data.DbType.Int32,
+            Direction = System.Data.ParameterDirection.Output,
+            Size = sizeof(int)
+        };
+
+
+        var PaginatedBlogs = _context.Database
+                                    .SqlQueryRaw<BlogsGenreDetails>("Exec SP_PaginatedSeachResult @SearchTerm, @PageSize, @PageNumber, @TotalRecords OUTPUT", 
+                                    new SqlParameter("@SearchTerm", SearchTerm ?? (object)DBNull.Value), new SqlParameter("@PageSize", PageSize), new SqlParameter("@PageNumber", PageNumber), totalRecordsParam)
                                     .ToList();
 
-
-        int totalRecordsCount = _context.Database
-                            .SqlQuery<int>($"Exec SP_TotalPageCOunt {SearchTerm}")
-                            .AsEnumerable()
-                            .FirstOrDefault();
+        //Console.WriteLine(PaginatedBlogs)
+        int totalRecordsCount = (int)totalRecordsParam.Value;
+        Console.WriteLine(totalRecordsCount);
         var TotalPages = (int)Math.Ceiling((double)totalRecordsCount / PageSize);
 
         ViewBag.TotalPages = TotalPages;
@@ -45,6 +54,7 @@ public class HomeController : Controller
 
         var records = await _context.Blogs
             .Include(b => b.Genres)
+            .Include(b => b.Comments)
             .FirstOrDefaultAsync(b => b.Id == id);
         if (records == null)
         {

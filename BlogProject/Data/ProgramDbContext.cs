@@ -36,6 +36,7 @@ namespace BlogProject.Data
         public DbSet<User> User { get; set; }
         public DbSet<Blogs> Blogs { get; set; } 
         public DbSet<Genre> Genres { get; set; }
-        public DbSet<BlogsGenreDetails> BlogsGenreDetails { get; set; }
+        public DbSet<Blogcomments> Comments { get; set; }
+
     }
 }

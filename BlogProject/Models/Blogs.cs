@@ -16,10 +16,10 @@ namespace BlogProject.Models
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public virtual User? user { get; set; }
-        //[Required(ErrorMessage ="Image is Required")]
         public byte[]? Image { get; set; }
 
         public virtual ICollection<Genre> Genres { get; set; }
+        public virtual ICollection<Blogcomments>? Comments { get; set; }
 
     }
 }

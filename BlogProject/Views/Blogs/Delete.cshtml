@@ -1,6 +1,8 @@
 ﻿@model BlogProject.Models.Blogs
 
 @{
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+
     ViewData["Title"] = "Delete";
 }
 
@@ -55,6 +57,6 @@
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-controller="Blogs" asp-action="OwnBlogs">Back to List</a>
     </form>
 </div>

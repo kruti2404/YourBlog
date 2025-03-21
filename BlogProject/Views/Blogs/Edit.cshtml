@@ -1,6 +1,8 @@
 ﻿@model BlogProject.Models.Blogs
 
 @{
+	Layout = "~/Views/Shared/_UserLayout.cshtml";
+
 	ViewData["Title"] = "Edit";
 }
 
@@ -40,6 +42,6 @@
 </div>
 
 <div>
-	<a asp-action="Index">Back to List</a>
+	<a asp-controller="Blogs" asp-action="OwnBlogs">Back to List</a>
 </div>
 
