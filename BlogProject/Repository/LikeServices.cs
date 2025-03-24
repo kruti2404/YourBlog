@@ -12,10 +12,6 @@ namespace BlogProject.Repository
             _context = context;
         }
 
-        public IEnumerable<Likes> GetAll()
-        {
-            return _context.Likes.ToList();
-        }
 
         public async Task<Likes> GetById(int id)
         {
@@ -26,19 +22,12 @@ namespace BlogProject.Repository
         {
             await _context.Likes.AddAsync(likes);
         }
-        public void Update(Likes likes)
-        {
-            _context.Likes.Remove(likes);
-        }
+        
         public void Remove(Likes likes)
         {
             _context.Likes.Update(likes);
         }
 
-        public async Task Save()
-        {
-            await _context.SaveChangesAsync();
-        }
 
     }
 }
