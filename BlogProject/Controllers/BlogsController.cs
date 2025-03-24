@@ -1,30 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BlogProject.Models;
 using Microsoft.AspNetCore.Authorization;
 using BlogProject.Repository;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using BlogProject.Data;
 using Microsoft.Data.SqlClient;
-using System.Drawing.Printing;
 
 namespace BlogsProject.Controllers
 {
     [Authorize(Roles = "User")]
     public class BlogsController : Controller
     {
-        private readonly IGenericRepository<Blogs> _BlogsRepository;
+        private readonly BlogServices _BlogsRepository;
         private readonly ProgramDbContext _context;
-        private readonly IGenericRepository<Genre> _GenreRepository;
+        private readonly GenreServices _GenreRepository;
 
 
-        public BlogsController(IGenericRepository<Blogs> context, ProgramDbContext context2, IGenericRepository<Genre> GenreRepo)
+        public BlogsController(BlogServices context, ProgramDbContext context2, GenreServices GenreRepo)
         {
             _BlogsRepository = context;
             _context = context2;
@@ -43,12 +37,7 @@ namespace BlogsProject.Controllers
                 Size = sizeof(int)
             };
 
-
-            var PaginatedBlogs = _context.Database
-                                        .SqlQueryRaw<BlogsGenreDetails>("Exec SP_PaginatedSeachResult @SearchTerm, @PageSize, @PageNumber, @TotalRecords OUTPUT",
-                                        new SqlParameter("@SearchTerm", SearchTerm ?? (object)DBNull.Value), new SqlParameter("@PageSize", PageSize), new SqlParameter("@PageNumber", PageNumber), totalRecordsParam)
-                                        .ToList();
-
+            IEnumerable<BlogsGenreDTO> PaginatedBlogs = _BlogsRepository.GetAll(SearchTerm, totalRecordsParam, PageSize, PageNumber);
 
             int totalRecordsCount = (int)totalRecordsParam.Value;
             Console.WriteLine(totalRecordsCount);
@@ -63,16 +52,12 @@ namespace BlogsProject.Controllers
         }
 
         // GET: Blogs1/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
 
             Console.WriteLine($"Blog ID received: {id}");
 
-            var records = await _context.Blogs
-                .Include(b => b.Genres)
-                .Include(b => b.Comments)
-                .Include(b => b.Likes)
-                .FirstOrDefaultAsync(b => b.Id == id);
+            Blogs records = await _BlogsRepository.Details(id);
             if (records == null)
             {
                 return NotFound();
@@ -101,7 +86,7 @@ namespace BlogsProject.Controllers
             comment.CommentText = CommentText;
 
             _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
+            await _BlogsRepository.Save();
 
             return RedirectToAction("Details", new { id = BlogId });
         }
@@ -123,13 +108,13 @@ namespace BlogsProject.Controllers
                     LikedAt = DateTime.Now
                 };
                 await _context.Likes.AddAsync(like);
-                await _context.SaveChangesAsync();
+                await _BlogsRepository.Save();
                 return Json(new { success = true, liked = true, message = "Liked successfully!" });
             }
             else
             {
                 _context.Likes.Remove(existing);
-                await _context.SaveChangesAsync();
+                await _BlogsRepository.Save();
                 return Json(new { success = true, liked = false, message = "Unliked successfully!" });
             }
         }
@@ -138,7 +123,7 @@ namespace BlogsProject.Controllers
             var Id = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
             Console.WriteLine("UserID: " + Id);
-            var records = await _BlogsRepository.GetAll();
+            var records = _BlogsRepository.GetAll();
             var blogs = await _context.Blogs
                                    .Include(b => b.Genres)
                                    .Where(b => b.UserId == Id)
@@ -152,7 +137,7 @@ namespace BlogsProject.Controllers
         // GET: Blogs1/Create
         public async Task<IActionResult> Create()
         {
-            ViewBag.Genres = new SelectList(await _GenreRepository.GetAll(), "Id", "Name");
+            ViewBag.Genres = new SelectList(_GenreRepository.GetAll(), "Id", "Name");
             return View();
         }
 
@@ -163,7 +148,7 @@ namespace BlogsProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Blogs blogs, List<int> SelectedGenreIds, IFormFile ImageFile)
         {
-            ViewData["Genres"] = new SelectList(await _GenreRepository.GetAll(), "Id", "Name");
+            ViewData["Genres"] = new SelectList(_GenreRepository.GetAll(), "Id", "Name");
 
             Console.WriteLine(ImageFile);
             if (ImageFile != null && ImageFile.Length > 0)
@@ -178,7 +163,7 @@ namespace BlogsProject.Controllers
             blogs.Genres = new List<Genre>();
             foreach (var genreId in SelectedGenreIds)
             {
-                var genre = await _context.Genres.FindAsync(genreId);
+                var genre = _GenreRepository.GetById(genreId);
                 if (genre != null)
                 {
                     _context.Entry(genre).State = EntityState.Unchanged; // Ensures the existing genre is linked
@@ -208,14 +193,14 @@ namespace BlogsProject.Controllers
         }
 
         // GET: Blogs1/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var blogs = await _context.Blogs.FindAsync(id);
+            var blogs = _BlogsRepository.GetById(id);
             if (blogs == null)
             {
                 return NotFound();
@@ -261,8 +246,7 @@ namespace BlogsProject.Controllers
                     existingBlog.Title = blogs.Title;
                     existingBlog.Content = blogs.Content;
                     existingBlog.UpdatedAt = blogs.UpdatedAt;
-                    //existingBlog.Genres = blogs.gene
-                    await _context.SaveChangesAsync();
+                    await _BlogsRepository.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {

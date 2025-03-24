@@ -11,9 +11,9 @@ namespace BlogProject.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private IGenericRepository<User> _UserRepository;
-        private IGenericRepository<Blogs> _BlogsRepository;
-        public AdminController(IGenericRepository<User> userRepo, IGenericRepository<Blogs> blogRepo)
+        private UserServices _UserRepository;
+        private BlogServices _BlogsRepository;
+        public AdminController(UserServices userRepo, BlogServices blogRepo)
         {
             _UserRepository = userRepo;
             _BlogsRepository = blogRepo;
@@ -24,17 +24,15 @@ namespace BlogProject.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Allusers()
+        public IActionResult Allusers()
         {
 
-            var users = await _UserRepository.GetAll();
-            return View(users);
+            return View(_UserRepository.GetAll());
         }
-        public async Task<IActionResult> AllBlogs()
+        public IActionResult AllBlogs()
         {
 
-            var blogs = await _BlogsRepository.GetAll();
-            return View(blogs);
+            return View(_BlogsRepository.GetAll());
         }
     }
 }

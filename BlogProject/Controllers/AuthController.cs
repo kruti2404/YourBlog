@@ -11,20 +11,22 @@ namespace BlogProject.Controllers
     public class AuthController : Controller
     {
         private JwtServices _service;
-        private IGenericRepository<User> _UserRepository;
+        //private IGenericRepository<User> _UserRepository;
 
-        private ProgramDbContext _context;
-        public AuthController(JwtServices services, IGenericRepository<User> userRepo, ProgramDbContext context)
+        //private ProgramDbContext _context;
+        private readonly UserServices _userServices;
+        public AuthController(JwtServices services, UserServices userservices)
         {
             _service = services;
-            _UserRepository = userRepo;
-            _context = context;
+            //_UserRepository = userRepo;
+            //_context = context;
+            _userServices = userservices;
 
         }
 
-        public async Task<IActionResult> Index()
+        public ActionResult Index()
         {
-            var users = await _UserRepository.GetAll();
+            var users = _userServices.GetAll();
             return View(users);
         }
         [HttpGet]
@@ -46,7 +48,8 @@ namespace BlogProject.Controllers
             {
                 return View(user);
             }
-            var GatedUSer = await _context.User.FirstOrDefaultAsync(x => x.UserName == user.UserName);
+
+            var GatedUSer = _userServices.GetByUserName(user.UserName);
             if (GatedUSer == null)
             {
                 ModelState.AddModelError(string.Empty, "Invalid UserName or Password");
@@ -65,7 +68,6 @@ namespace BlogProject.Controllers
                 Response.HttpContext.Session.SetString("Token", token);
             }
 
-            //Console.WriteLine(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
             if (GatedUSer.Role == "Admin")
             {
                 return RedirectToAction("Index", "Admin");
@@ -93,14 +95,14 @@ namespace BlogProject.Controllers
             }
 
             //still to implement the error for the UserName and email duplication 
-            var UserMatch = _context.User.FirstOrDefault(x => x.UserName == user.UserName);
-            if(UserMatch != null)
+            var UserMatch = _userServices.GetByUserName(user.UserName);
+            if (UserMatch != null)
             {
                 ModelState.AddModelError("UserName", "UserName is already taken ");
                 return View(user);
             }
-            var EmailMatch = _context.User.FirstOrDefault(x => x.Email == user.Email);
-            if(EmailMatch != null)
+            var EmailMatch = _userServices.GetByUserName(user.Email);
+            if (EmailMatch != null)
             {
                 ModelState.AddModelError("Email", "You have already register with this email");
                 return View(user);
@@ -113,8 +115,8 @@ namespace BlogProject.Controllers
             newUser.Password = user.Password;
             newUser.Role = user.Role;
 
-            await _UserRepository.Insert(newUser);
-            await _UserRepository.Save();
+            await _userServices.Insert(newUser);
+            await _userServices.Save();
 
             return RedirectToAction("Login");
         }

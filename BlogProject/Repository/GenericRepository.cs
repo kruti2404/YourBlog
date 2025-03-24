@@ -26,11 +26,7 @@ namespace BlogProject.Repository
             return await table.FindAsync(id);
 
         }
-
-        //public async Task<T> GetByUserName(string str)
-        //{
-        //    var record = await table.FirstOrDefaultAsync<T>(x => x.)
-        //}
+       
 
         public async Task Insert(T entity)
         {

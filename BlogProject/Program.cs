@@ -19,6 +19,10 @@ namespace BlogProject
             builder.Services.AddControllersWithViews();
             builder.Services.AddSingleton<JwtSecurityTokenHandler>();
             builder.Services.AddSingleton<JwtServices>();
+
+            builder.Services.AddScoped<UserServices>();
+            builder.Services.AddScoped<BlogServices>();
+            builder.Services.AddScoped<GenreServices>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             builder.Services.AddDbContext<ProgramDbContext>(options =>

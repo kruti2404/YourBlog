@@ -2,7 +2,7 @@
 
 namespace BlogProject.Models
 {
-    public class BlogsGenreDetails
+    public class BlogsGenreDTO
     {
         public int Id { get; set; }
         public string Title { get; set; }

@@ -32,7 +32,7 @@ public class HomeController : Controller
 
 
         var PaginatedBlogs = _context.Database
-                                    .SqlQueryRaw<BlogsGenreDetails>("Exec SP_PaginatedSeachResult @SearchTerm, @PageSize, @PageNumber, @TotalRecords OUTPUT",
+                                    .SqlQueryRaw<BlogsGenreDTO>("Exec SP_PaginatedSeachResult @SearchTerm, @PageSize, @PageNumber, @TotalRecords OUTPUT",
                                     new SqlParameter("@SearchTerm", SearchTerm ?? (object)DBNull.Value), new SqlParameter("@PageSize", PageSize), new SqlParameter("@PageNumber", PageNumber), totalRecordsParam)
                                     .ToList();
 
