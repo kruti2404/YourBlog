@@ -49,7 +49,7 @@
 								<p>
 									<strong>Genres:</strong>
 
-									@if (blog.GenreName.Any())
+									@if (!string.IsNullOrEmpty(blog.GenreName))
 									{
 										Console.WriteLine(blog.GenreName);
 										var genresList = blog.GenreName.Split(",");

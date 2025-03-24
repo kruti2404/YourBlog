@@ -23,6 +23,8 @@ namespace BlogProject
             builder.Services.AddScoped<UserServices>();
             builder.Services.AddScoped<BlogServices>();
             builder.Services.AddScoped<GenreServices>();
+            builder.Services.AddScoped<CommentServices>();
+            builder.Services.AddScoped<LikeServices>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             builder.Services.AddDbContext<ProgramDbContext>(options =>

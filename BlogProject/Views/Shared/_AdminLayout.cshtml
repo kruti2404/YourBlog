@@ -1,9 +1,6 @@
 ﻿@{
 	var token = Context.Session.GetString("Token");
 }
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,63 +12,63 @@
 	<link rel="stylesheet" href="~/BlogProject.styles.css" asp-append-version="true" />
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
 
-	<link rel="stylesheet" href="@Url.Content("~/css/AdminIndex.css")" />
-
-
 </head>
 <body>
 	<header>
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
 			<div class="container-fluid">
-				<a class="navbar-brand" asp-area="" asp-controller="Blogs" asp-action="Index">BlogProject</a>
+				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BlogProject</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
+				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+
+
+					<!-- Sidebar -->
+					<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+						<div class="position-sticky pt-3">
+							<ul class="nav flex-row">
+								<li class="nav-item">
+									<a class="nav-link" href="@Url.Action("AllBlogs", "Admin")">
+										<i class="bi bi-house-door me-2"></i>
+										Manage Blogs
+									</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="@Url.Action("Allusers", "Admin")">
+										<i class="bi bi-people me-2"></i>
+										Manage Users
+
+									</a>
+								</li>
+
+							</ul>
+						</div>
+					</nav>
 
 
 
-				<div class="container-fluid">
-					<div class="row">
-						<!-- Sidebar -->
-						<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-							<div class="position-sticky pt-3">
-								<ul class="nav flex-column">
-									<li class="nav-item">
-										<a class="nav-link" href="@Url.Action("AllBlogs", "Admin")">
+					<ul class="navbar-nav ms-auto">
 
-											<i class="bi bi-house-door me-2"></i>
-											Manage Blogs
+						@if (token == null)
+						{
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Register">Register</a>
+							</li>
+						}
+						else
+						{
 
-										</a>
-									</li>
-									<li class="nav-item">
-										<a class="nav-link" href="@Url.Action("Allusers", "Admin")">
-											<i class="bi bi-people me-2"></i>
-											Manage Users
-
-										</a>
-									</li>
-
-								</ul>
-							</div>
-						</nav>
-
-						<!-- Main content -->
-						<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-							<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-								<h1 class="h2">Dashboard</h1>
-								<button id="sidebarToggle" class="btn btn-primary d-md-none">
-									<i class="bi bi-list"></i> Toggle Sidebar
-								</button>
-							</div>
-							<p>Main content goes here.</p>
-						</main>
-					</div>
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="logout">Log out</a>
+							</li>
+						}
+					</ul>
 				</div>
-
-
-
 			</div>
 		</nav>
 	</header>
@@ -85,42 +82,5 @@
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)
-
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-				const sidebar = document.getElementById('sidebar');
-				const sidebarToggle = document.getElementById('sidebarToggle');
-				const body = document.body;
-
-				sidebarToggle.addEventListener('click', function() {
-					sidebar.classList.toggle('sidebar-hidden');
-				});
-
-				// Close sidebar when clicking outside on mobile
-				body.addEventListener('click', function(event) {
-					if (window.innerWidth <= 767.98 && !sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
-						sidebar.classList.add('sidebar-hidden');
-					}
-				});
-
-				// Update sidebar visibility on window resize
-				window.addEventListener('resize', function() {
-					if (window.innerWidth > 767.98) {
-						sidebar.classList.remove('sidebar-hidden');
-					}
-				});
-
-				// Highlight active nav item
-				const navLinks = document.querySelectorAll('.nav-link');
-				navLinks.forEach(link => {
-					link.addEventListener('click', function() {
-						navLinks.forEach(l => l.classList.remove('active'));
-						this.classList.add('active');
-					});
-				});
-			});
-	</script>
-
 </body>
 </html>

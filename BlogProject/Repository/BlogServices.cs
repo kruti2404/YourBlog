@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using BlogProject.Data;
 using BlogProject.Models;
 using Microsoft.Data.SqlClient;
@@ -25,7 +26,16 @@ namespace BlogProject.Repository
                                        .SqlQueryRaw<BlogsGenreDTO>("Exec SP_PaginatedSeachResult @SearchTerm, @PageSize, @PageNumber, @TotalRecords OUTPUT",
                                        new SqlParameter("@SearchTerm", SearchTerm ?? (object)DBNull.Value), new SqlParameter("@PageSize", PageSize), new SqlParameter("@PageNumber", PageNumber), totalRecordsParam)
                                        .ToList();
-            return PaginatedBlogs;
+            return PaginatedBlogs ?? new List<BlogsGenreDTO>();
+        }
+        public async Task<IEnumerable<Blogs>> AllOwnBlogs(int Id)
+        {
+
+            return await _context.Blogs
+                                  .Include(b => b.Genres)
+                                  .Where(b => b.UserId == Id)
+                                  .ToListAsync();
+
         }
         public Blogs GetById(int id)
         {
@@ -40,6 +50,10 @@ namespace BlogProject.Repository
         public void Update(Blogs blogs)
         {
             _context.Blogs.Update(blogs);
+        }
+        public void Remove(Blogs blogs)
+        {
+            _context.Blogs.Remove(blogs);
         }
         public async Task Save()
         {

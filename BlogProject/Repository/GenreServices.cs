@@ -15,23 +15,10 @@ namespace BlogProject.Repository
         {
             return _context.Genres.ToList();
         }
-        public Genre GetById(int id)
-        {
-            var record = _context.Genres.FirstOrDefault(x => x.Id == id);
-            return record;
-        }
 
-        public async Task Insert(Genre genre)
-        {
-            await _context.Genres.AddAsync(genre);
-        }
-        public void Update(Genre genre)
-        {
-            _context.Genres.Update(genre);
-        }
-        public async Task Save()
-        {
-            await _context.SaveChangesAsync();
-        }
+
+
+
+
     }
 }
