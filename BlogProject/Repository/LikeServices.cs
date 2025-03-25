@@ -12,7 +12,6 @@ namespace BlogProject.Repository
             _context = context;
         }
 
-
         public async Task<Likes> GetById(int id)
         {
             return await _context.Likes.FirstOrDefaultAsync(x => x.Id == id);
@@ -22,7 +21,7 @@ namespace BlogProject.Repository
         {
             await _context.Likes.AddAsync(likes);
         }
-        
+
         public void Remove(Likes likes)
         {
             _context.Likes.Update(likes);

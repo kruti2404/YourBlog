@@ -28,7 +28,7 @@ namespace BlogsProject.Controllers
             _LikesRepository = likeServices;
         }
 
-        // GET: Blogs1
+        // GET: Blogs
         public async Task<IActionResult> Index(string SearchTerm, int PageSize = 3, int PageNumber = 1)
         {
 
@@ -43,7 +43,6 @@ namespace BlogsProject.Controllers
             IEnumerable<BlogsGenreDTO> PaginatedBlogs = _BlogsRepository.GetAll(SearchTerm, totalRecordsParam, PageSize, PageNumber);
 
             int totalRecordsCount = (int)totalRecordsParam.Value;
-            Console.WriteLine(totalRecordsCount);
             var TotalPages = (int)Math.Ceiling((double)totalRecordsCount / PageSize);
 
             ViewBag.TotalPages = TotalPages;
@@ -124,7 +123,7 @@ namespace BlogsProject.Controllers
         public async Task<IActionResult> OwnBlogs()
         {
             var Id = Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
-            var blogs =await _BlogsRepository.AllOwnBlogs(Id);
+            var blogs = await _BlogsRepository.AllOwnBlogs(Id);
 
             return View(blogs);
 

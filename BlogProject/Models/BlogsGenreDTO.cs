@@ -12,7 +12,7 @@ namespace BlogProject.Models
         public DateTime? UpdatedAt { get; set; }
 
         public byte[]? Image { get; set; }
-        public string? GenreName = string.Empty;
+        public string? GenreName { get; set; } = string.Empty;
         public string? Comments { get; set; }
     }
 }
