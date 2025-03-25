@@ -29,8 +29,19 @@ namespace BlogsProject.Controllers
         }
 
         // GET: Blogs
-        public async Task<IActionResult> Index(string SearchTerm, int PageSize = 3, int PageNumber = 1)
+        public async Task<IActionResult> Index(string SearchTerm, string FilterGenre, int PageSize = 3, int PageNumber = 1)
         {
+
+
+            IEnumerable<Genre> Genres = _GenreRepository.GetAll();
+
+            List<string> genresName = new List<string>();
+            foreach (var genre in Genres)
+            {
+                genresName.Add(genre.Name);
+            }
+            ViewBag.Genres = genresName;
+            Console.WriteLine("Selected Genre" + FilterGenre);
 
             var totalRecordsParam = new SqlParameter
             {
@@ -40,7 +51,7 @@ namespace BlogsProject.Controllers
                 Size = sizeof(int)
             };
 
-            IEnumerable<BlogsGenreDTO> PaginatedBlogs = _BlogsRepository.GetAll(SearchTerm, totalRecordsParam, PageSize, PageNumber);
+            IEnumerable<BlogsGenreDTO> PaginatedBlogs = _BlogsRepository.GetAll(SearchTerm, FilterGenre, totalRecordsParam, PageSize, PageNumber);
 
             int totalRecordsCount = (int)totalRecordsParam.Value;
             var TotalPages = (int)Math.Ceiling((double)totalRecordsCount / PageSize);
@@ -49,6 +60,8 @@ namespace BlogsProject.Controllers
             ViewBag.SearchTerm = SearchTerm;
             ViewBag.PageSize = PageSize;
             ViewBag.PageNumber = PageNumber;
+            ViewBag.FilterGenre = FilterGenre;
+
 
             return View(PaginatedBlogs);
         }

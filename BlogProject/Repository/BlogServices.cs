@@ -19,11 +19,15 @@ namespace BlogProject.Repository
         {
             return _context.Blogs.ToList();
         }
-        public IEnumerable<BlogsGenreDTO> GetAll(string SearchTerm, SqlParameter totalRecordsParam, int PageSize = 3, int PageNumber = 1)
+        public IEnumerable<BlogsGenreDTO> GetAll(string SearchTerm, string FilterGenre, SqlParameter totalRecordsParam, int PageSize = 3, int PageNumber = 1)
         {
             var PaginatedBlogs = _context.Database
-                                                   .SqlQueryRaw<BlogsGenreDTO>("Exec SP_PaginatedSeachResult @SearchTerm, @PageSize, @PageNumber, @TotalRecords OUTPUT",
-                                                   new SqlParameter("@SearchTerm", SearchTerm ?? (object)DBNull.Value), new SqlParameter("@PageSize", PageSize), new SqlParameter("@PageNumber", PageNumber), totalRecordsParam)
+                                                   .SqlQueryRaw<BlogsGenreDTO>("Exec SP_PaginatedSeachResult @SearchTerm, @FilterGenre, @PageSize, @PageNumber, @TotalRecords OUTPUT",
+                                                   new SqlParameter("@SearchTerm", SearchTerm ?? (object)DBNull.Value),
+                                                   new SqlParameter("@FilterGenre", FilterGenre ?? (object)DBNull.Value),
+                                                   new SqlParameter("@PageSize", PageSize),
+                                                   new SqlParameter("@PageNumber", PageNumber),
+                                                   totalRecordsParam)
                                                    .ToList();
 
             return PaginatedBlogs ?? new List<BlogsGenreDTO>();

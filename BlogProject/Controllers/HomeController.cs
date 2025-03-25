@@ -15,13 +15,27 @@ namespace BlogProject.Controllers;
 public class HomeController : Controller
 {
     private readonly BlogServices _blogServices;
-    public HomeController(ProgramDbContext context, BlogServices blogServices)
+    private readonly GenreServices _genreServices;
+    public HomeController(BlogServices blogServices, GenreServices genreServices)
     {
         _blogServices = blogServices;
+        _genreServices = genreServices;
     }
     [HttpGet]
-    public IActionResult Index(string SearchTerm, int PageSize = 3, int PageNumber = 1)
+    public IActionResult Index(string SearchTerm, string FilterGenre, int PageSize = 3, int PageNumber = 1)
     {
+
+
+
+        IEnumerable<Genre> Genres = _genreServices.GetAll();
+
+        List<string> genresName = new List<string>();
+        foreach (var genre in Genres)
+        {
+            genresName.Add(genre.Name);
+        }
+        ViewBag.Genres = genresName;
+        Console.WriteLine("Selected Genre" + FilterGenre);
 
         var totalRecordsParam = new SqlParameter
         {
@@ -31,8 +45,7 @@ public class HomeController : Controller
             Size = sizeof(int)
         };
 
-        var PaginatedBlogs = _blogServices.GetAll(SearchTerm, totalRecordsParam, PageSize, PageNumber);
-
+        var PaginatedBlogs = _blogServices.GetAll(SearchTerm, FilterGenre, totalRecordsParam, PageSize, PageNumber);
 
         int totalRecordsCount = (int)totalRecordsParam.Value;
         var TotalPages = (int)Math.Ceiling((double)totalRecordsCount / PageSize);
@@ -41,6 +54,9 @@ public class HomeController : Controller
         ViewBag.SearchTerm = SearchTerm;
         ViewBag.PageSize = PageSize;
         ViewBag.PageNumber = PageNumber;
+        ViewBag.FilterGenre = FilterGenre;
+
+
 
         return View(PaginatedBlogs);
     }

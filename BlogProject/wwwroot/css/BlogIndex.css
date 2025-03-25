@@ -1,23 +1,91 @@
-﻿.search-container {
-    position: relative;
+﻿form {
+    all: unset; /* Reset default styles */
+    display: block; /* Ensure proper layout */
+    width: 100%; /* Maintain full width */
+}
+
+a {
+    all: unset;
+}
+/*Search Css*/
+.search-container {
+    max-width: 100%;
+    margin: 0 auto;
+    z-index: 10;
+}
+
+.search-wrapper {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    align-content: center;
+}
+
+.search-header {
+    display: flex;
+    align-items: center;
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    width: 80%
 }
 
 .search-input {
-    height: 50px;
+    border: 2px solid #eee;
     border-radius: 30px;
-    padding-left: 35px;
-    border: none;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 15px 25px;
+    padding-right: 50px;
+    width: 100%;
+    transition: all 0.3s ease;
 }
 
-.search-icon {
-    position: absolute;
-    top: 50%;
-    left: 25px;
-    transform: translateY(-50%);
-    color: #888;
+    .search-input:focus {
+        border-color: #007bff;
+        box-shadow: none;
+    }
+
+form .search-icon {
+    position: relative;
+    right: 40px;
+    color: #666;
 }
 
+.category-filters {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-radius: 0 0 15px 15px;
+}
+
+.filter-chip {
+    display: inline-block;
+    padding: 8px 15px;
+    margin: 5px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .filter-chip:hover {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .filter-chip.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .filter-chip i {
+        margin-right: 5px;
+        font-size: 0.9em;
+    }
 
 .pagination-gradient {
     margin: 2rem 0;
