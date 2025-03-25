@@ -49,11 +49,9 @@
 								<p>
 									<strong>Genres:</strong>
 
-									@if (blog.GenreName.Any())
+									@if (blog.GenreName != null && blog.GenreName.Any())
 									{
-										Console.WriteLine(blog.GenreName);
 										var genresList = blog.GenreName.Split(",");
-										Console.WriteLine(genresList[0]);
 										@foreach (var names in genresList)
 										{
 											<span class="badge bg-primary">@names</span>

@@ -39,7 +39,11 @@ namespace BlogProject.Repository
         }
         public Blogs GetById(int id)
         {
-            var record = _context.Blogs.FirstOrDefault(x => x.Id == id);
+            var record = _context.Blogs
+                                    .Include(b => b.Genres)
+                                    .Include(b => b.Comments)
+                                    .Include(b => b.Likes)
+                                    .FirstOrDefault(x => x.Id == id);
             return record;
         }
 

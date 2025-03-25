@@ -8,35 +8,37 @@ using Microsoft.EntityFrameworkCore;
 using BlogProject.Models;
 using Microsoft.AspNetCore.Authorization;
 using BlogProject.Data;
+using BlogProject.Repository;
 
 namespace BlogProject.Controllers
 {
     [Authorize]
     public class UsersController : Controller
     {
+        private readonly UserServices _userServices;
         private readonly ProgramDbContext _context;
 
-        public UsersController(ProgramDbContext context)
+        public UsersController(ProgramDbContext context, UserServices userServices)
         {
+            _userServices = userServices;
             _context = context;
         }
 
         // GET: Users
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.User.ToListAsync());
+            return View(_userServices.GetAll());
         }
 
         // GET: Users/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = _userServices.GetById(id);
             if (user == null)
             {
                 return NotFound();
@@ -60,22 +62,22 @@ namespace BlogProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
+                await _userServices.Insert(user);
+                await _userServices.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(user);
         }
 
         // GET: Users/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User.FindAsync(id);
+            var user = _userServices.GetById(id);
             if (user == null)
             {
                 return NotFound();
@@ -99,8 +101,8 @@ namespace BlogProject.Controllers
             {
                 try
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
+                    _userServices.Update(user);
+                    await _userServices.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -119,15 +121,14 @@ namespace BlogProject.Controllers
         }
 
         // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = _userServices.GetById(id);
             if (user == null)
             {
                 return NotFound();
@@ -141,19 +142,20 @@ namespace BlogProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _context.User.FindAsync(id);
+            var user = await _userServices.GetById(id);
             if (user != null)
             {
-                _context.User.Remove(user);
+                _userServices.Remove(user);
             }
 
-            await _context.SaveChangesAsync();
+            await _userServices.Save();
             return RedirectToAction(nameof(Index));
         }
 
         private bool UserExists(int id)
         {
-            return _context.User.Any(e => e.Id == id);
+            var record = _userServices.GetById(id);
+            return record != null;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace BlogProject.Repository
         {
             return _context.User.FirstOrDefault(x => x.UserName == UserName);
 
-        } 
+        }
         public User GetByUserEmail(string Email)
         {
             return _context.User.FirstOrDefault(x => x.Email == Email);
@@ -39,6 +39,10 @@ namespace BlogProject.Repository
         public void Update(User user)
         {
             _context.User.Update(user);
+        }
+        public void Remove(User user)
+        {
+            _context.Remove(user);
         }
         public async Task Save()
         {

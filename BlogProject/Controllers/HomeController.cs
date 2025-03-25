@@ -8,15 +8,16 @@ using System.Threading.Tasks;
 using NuGet.ProjectModel;
 using System.Drawing.Printing;
 using Microsoft.Data.SqlClient;
+using BlogProject.Repository;
 
 namespace BlogProject.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ProgramDbContext _context;
-    public HomeController(ProgramDbContext context)
+    private readonly BlogServices _blogServices;
+    public HomeController(ProgramDbContext context, BlogServices blogServices)
     {
-        _context = context;
+        _blogServices = blogServices;
     }
     [HttpGet]
     public IActionResult Index(string SearchTerm, int PageSize = 3, int PageNumber = 1)
@@ -30,15 +31,10 @@ public class HomeController : Controller
             Size = sizeof(int)
         };
 
+        var PaginatedBlogs = _blogServices.GetAll(SearchTerm, totalRecordsParam, PageSize, PageNumber);
 
-        var PaginatedBlogs = _context.Database
-                                    .SqlQueryRaw<BlogsGenreDTO>("Exec SP_PaginatedSeachResult @SearchTerm, @PageSize, @PageNumber, @TotalRecords OUTPUT",
-                                    new SqlParameter("@SearchTerm", SearchTerm ?? (object)DBNull.Value), new SqlParameter("@PageSize", PageSize), new SqlParameter("@PageNumber", PageNumber), totalRecordsParam)
-                                    .ToList();
 
-        //Console.WriteLine(PaginatedBlogs)
         int totalRecordsCount = (int)totalRecordsParam.Value;
-        //Console.WriteLine(totalRecordsCount);
         var TotalPages = (int)Math.Ceiling((double)totalRecordsCount / PageSize);
 
         ViewBag.TotalPages = TotalPages;
@@ -48,14 +44,11 @@ public class HomeController : Controller
 
         return View(PaginatedBlogs);
     }
-    public async Task<IActionResult> Details(int id)
+    public IActionResult Details(int id)
     {
-        //Console.WriteLine($"Blog ID received: {id}");
 
-        var records = await _context.Blogs
-            .Include(b => b.Genres)
-            .Include(b => b.Comments)
-            .FirstOrDefaultAsync(b => b.Id == id);
+
+        var records = _blogServices.GetById(id);
         if (records == null)
         {
             return NotFound();
