@@ -14,12 +14,16 @@ namespace BlogProject.Repository
         {
             _context = context;
         }
-
         public async Task Insert(Blogcomments comments)
         {
             await _context.Comments.AddAsync(comments);
         }
-                      
+
+        public async Task<int> GetCommentsCount(int BlogId)
+        {
+            return await _context.Comments
+                .Where(c => c.BlogId == BlogId).CountAsync();
+        }
 
     }
 }

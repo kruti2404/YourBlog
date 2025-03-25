@@ -98,18 +98,18 @@
 .comment-like-container {
     display: flex;
     align-items: center;
-    gap: 10px; /* Adjust space between buttons */
+    gap: 20px;
 }
 
-/* Comment Button Styling */
 .Comment-btn {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 35px;
-    height: 35px;
-    background: #e9ecef;
-    border-radius: 50%;
+    width: 50px;
+    height: auto;
+    padding: 8px;
+    border-radius: 10%;
     cursor: pointer;
     transition: background 0.3s ease-in-out;
 }
@@ -118,20 +118,44 @@
         background: #dee2e6;
     }
 
+    .Comment-btn svg {
+        margin-bottom: 4px;
+        width: 25px;
+        height: 25px;
+    }
+
+
+.Total-Comments {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 2px;
+    text-align: center;
+    font-weight: bold;
+}
+
+
+
+
 /* Like Button Styling */
 .like-btn {
     background: none;
     border: none;
     cursor: pointer;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     transition: transform 0.2s ease-in-out;
+    position: center;
+    width: 50px;
+    height: auto;
+    padding: 8px;
+    /*    background: #333;*/
 }
 
     .like-btn svg {
-        width: 27px;
-        height: 27px;
+        width: 22px !important;
+        height: 20px !important;
         transition: fill 0.3s ease-in-out;
     }
 
@@ -139,3 +163,11 @@
         fill: red !important; /* Change color when liked */
         transform: scale(1.2);
     }
+
+.Total-likes {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 5px;
+    text-align: center;
+    font-weight: bold;
+}

@@ -60,11 +60,11 @@ public class HomeController : Controller
 
         return View(PaginatedBlogs);
     }
-    public IActionResult Details(int id)
+    public async Task<IActionResult> Details(int id)
     {
 
 
-        var records = _blogServices.GetById(id);
+        var records = await _blogServices.GetById(id);
         if (records == null)
         {
             return NotFound();

@@ -135,6 +135,7 @@ namespace BlogsProject.Controllers
 
                 Console.WriteLine("Removed into Database ");
                 _LikesRepository.Remove(existing);
+
                 await _LikesRepository.Save();
                 return Json(new { success = true, liked = false, message = "Unliked successfully!" });
             }
@@ -277,13 +278,13 @@ namespace BlogsProject.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BlogsExists(blogs.Id))
+                    if (await BlogsExists(blogs.Id))
                     {
-                        return NotFound();
+                        throw;
                     }
                     else
                     {
-                        throw;
+                        return NotFound();
                     }
                 }
                 return RedirectToAction(nameof(Index));
@@ -297,7 +298,7 @@ namespace BlogsProject.Controllers
         public async Task<IActionResult> Delete(int id)
         {
 
-            var blog =await _BlogsRepository.GetById(id);
+            var blog = await _BlogsRepository.GetById(id);
             if (blog == null)
             {
                 return NotFound();
@@ -321,9 +322,9 @@ namespace BlogsProject.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BlogsExists(int id)
+        private async Task<bool> BlogsExists(int id)
         {
-            var blogs = _BlogsRepository.GetById(id);
+            var blogs = await _BlogsRepository.GetById(id);
             return blogs == null;
         }
     }

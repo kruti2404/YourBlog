@@ -17,6 +17,7 @@ namespace BlogProject.Repository
         public async Task<Likes> GetByUSerBlogID(int UserId, int BlogId)
         {
             return await _context.Likes
+                                .AsTracking()
                                 .FirstOrDefaultAsync(l => l.UserId == UserId && l.BlogId == BlogId);
         }
 
@@ -24,10 +25,14 @@ namespace BlogProject.Repository
         {
             await _context.Likes.AddAsync(likes);
         }
-
+        public async Task<int> GetLikeCount(int BlogId)
+        {
+            return await _context.Likes
+                .Where(l => l.BlogId == BlogId).CountAsync();
+        }
         public void Remove(Likes likes)
         {
-            _context.Likes.Update(likes);
+            _context.Likes.Remove(likes);
         }
         public async Task Save()
         {
