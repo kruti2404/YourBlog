@@ -39,7 +39,7 @@
 									foreach (var genre in ViewBag.Genres)
 									{
 										<div class="filter-chip @(RequestData == genre ? "active" : "")">
-											<a asp-route-FilterGenre="@genre" asp-route-PageNumber="@ViewBag.PageNumber"
+											<a asp-route-FilterGenre="@(RequestData== genre ? null : genre)" asp-route-PageNumber="@ViewBag.PageNumber"
 											   asp-route-PageSize="@ViewBag.PageSize"> <i class="fas fa-@genre"></i>@genre </a>
 										</div>
 									}

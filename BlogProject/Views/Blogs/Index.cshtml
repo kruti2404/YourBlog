@@ -35,11 +35,12 @@
 							<div class="category-filters">
 								@{
 									var RequestData = Context.Request.Query["FilterGenre"];
+									var selectedGenre = RequestData.ToString();
+
 									foreach (var genre in ViewBag.Genres)
 									{
-										<div class="filter-chip @(RequestData == genre ? "active" : "")">
-											<a asp-route-FilterGenre="@genre" asp-route-PageNumber="@ViewBag.PageNumber"
-											   asp-route-PageSize="@ViewBag.PageSize"> <i class="fas fa-@genre"></i>@genre </a>
+										<div class="filter-chip @(selectedGenre == genre ? "active" : "")">
+											<a asp-route-FilterGenre="@(selectedGenre == genre ? null : genre)">@genre</a>
 										</div>
 									}
 								}
@@ -109,6 +110,7 @@
 					<a class="page-link"
 					   asp-route-PageNumber="@(ViewBag.PageNumber - 1)"
 					   asp-route-PageSize="@ViewBag.PageSize"
+					   asp-route-SearchTerm="@ViewBag.SearchTerm"
 					   asp-route-FilterGenre="@ViewBag.FilterGenre">
 
 						<i class="fas fa-chevron-left"></i>
@@ -125,6 +127,7 @@
 						   asp-route-PageNumber="@i"
 						   asp-route-PageSize="@ViewBag.PageSize"
 						   asp-route-SearchTerm="@ViewBag.SearchTerm"
+						   asp-route-SearchTerm="@ViewBag.SearchTerm"
 						   asp-route-FilterGenre="@ViewBag.FilterGenre">
 							@i
 						</a>
@@ -135,6 +138,7 @@
 
 				<li class="page-item @(ViewBag.PageNumber >= ViewBag.TotalPages ? "disabled" : "")">
 					<a class="page-link"
+					   asp-route-SearchTerm="@ViewBag.SearchTerm"
 					   asp-route-FilterGenre="@ViewBag.FilterGenre"
 					   asp-route-PageNumber="@(ViewBag.PageNumber + 1)"
 					   asp-route-PageSize="@ViewBag.PageSize">
