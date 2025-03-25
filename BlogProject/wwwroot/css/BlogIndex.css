@@ -9,9 +9,8 @@ a {
 }
 /*Search Css*/
 .search-container {
-    max-width: 100%;
-    margin: 0 auto;
-    z-index: 10;
+    max-width: 95%;
+    margin: 5px auto;
 }
 
 .search-wrapper {
@@ -20,6 +19,7 @@ a {
     box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     transition: all 0.3s ease;
     align-content: center;
+    padding: 30px;
 }
 
 .search-header {
@@ -30,7 +30,7 @@ a {
 .search-input-group {
     display: flex;
     align-items: center;
-    width: 80%
+    width: 100%
 }
 
 .search-input {

@@ -1,11 +1,10 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using BlogProject.Data;
-using BlogProject.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlogProject.Repository
+namespace BlogProject.Models
 {
     public class BlogServices
     {
@@ -41,13 +40,13 @@ namespace BlogProject.Repository
                                   .ToListAsync();
 
         }
-        public Blogs GetById(int id)
+        public async Task<Blogs> GetById(int id)
         {
-            var record = _context.Blogs
+            var record = await _context.Blogs
                                     .Include(b => b.Genres)
                                     .Include(b => b.Comments)
                                     .Include(b => b.Likes)
-                                    .FirstOrDefault(x => x.Id == id);
+                                    .FirstOrDefaultAsync(x => x.Id == id);
             return record;
         }
 

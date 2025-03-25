@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using BlogProject.Data;
+using BlogProject.Models;
 using BlogProject.Repository;
 using BlogProject.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

@@ -8,6 +8,8 @@ using System.Security.Claims;
 using BlogProject.Data;
 using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Web.CodeGeneration;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace BlogsProject.Controllers
 {
@@ -111,8 +113,9 @@ namespace BlogsProject.Controllers
         {
             Console.WriteLine("Like Page : with " + BlogId + " And User id : " + UserId);
 
-            var existing = await _LikesRepository.GetById(UserId);
+            var existing = await _LikesRepository.GetByUSerBlogID(UserId, BlogId);
 
+            Console.WriteLine("User Id: " + UserId);
             if (existing == null)
             {
                 var like = new Likes
@@ -123,13 +126,16 @@ namespace BlogsProject.Controllers
                     LikedAt = DateTime.Now
                 };
                 await _LikesRepository.Insert(like);
-                await _BlogsRepository.Save();
+                await _LikesRepository.Save();
+                Console.WriteLine("Added into Database ");
                 return Json(new { success = true, liked = true, message = "Liked successfully!" });
             }
             else
             {
+
+                Console.WriteLine("Removed into Database ");
                 _LikesRepository.Remove(existing);
-                await _BlogsRepository.Save();
+                await _LikesRepository.Save();
                 return Json(new { success = true, liked = false, message = "Unliked successfully!" });
             }
         }
@@ -168,17 +174,18 @@ namespace BlogsProject.Controllers
             blogs.UpdatedAt = DateTime.Now;
 
             blogs.Genres = new List<Genre>();
-            //foreach (var genreId in SelectedGenreIds)
-            //{
-            //    var genre = _GenreRepository.GetById(genreId);
+            if (SelectedGenreIds != null && SelectedGenreIds.Any())
+            {
+                foreach (var genreId in SelectedGenreIds)
+                {
+                    var genre = await _GenreRepository.GetById(genreId);
 
-            //    if (genre != null)
-            //    {
-            //        _context.Entry(genre).State = EntityState.Unchanged; // Ensures the existing genre is linked
-            //        blogs.Genres.Add(genre);
-            //    }
-            //}
-
+                    if (genre != null)
+                    {
+                        blogs.Genres.Add(genre);
+                    }
+                }
+            }
             var IdentityClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (IdentityClaim == null)
             {
@@ -201,19 +208,20 @@ namespace BlogsProject.Controllers
         }
 
         // GET: Blogs/Edit/5
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
+            ViewBag.Genres = new SelectList(_GenreRepository.GetAll(), "Id", "Name");
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var blogs = _BlogsRepository.GetById(id);
+            var blogs = await _BlogsRepository.GetById(id);
             if (blogs == null)
             {
                 return NotFound();
             }
-            //ViewData["UserId"] = new SelectList(_context.User, "Id", "Id", blogs.UserId);
             return View(blogs);
         }
 
@@ -222,13 +230,15 @@ namespace BlogsProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Blogs blogs, IFormFile? ImageFile)
+        public async Task<IActionResult> Edit(int id, List<int> SelectedGenreIds, Blogs blogs, IFormFile? ImageFile)
         {
+            ViewBag.Genres = new SelectList(_GenreRepository.GetAll(), "Id", "Name");
+
             if (id != blogs.Id)
             {
                 return NotFound();
             }
-            var existings = _BlogsRepository.GetById(id);
+            var existings = await _BlogsRepository.GetById(id);
             if (existings == null)
             {
                 return NotFound();
@@ -248,10 +258,21 @@ namespace BlogsProject.Controllers
             {
                 try
                 {
-                    blogs.UpdatedAt = DateTime.Now;
+                    existings.Genres.Clear();
+                    foreach (var genreId in SelectedGenreIds)
+                    {
+                        Console.WriteLine("Geners : " + genreId);
+                        var genre = await _GenreRepository.GetById(genreId);
+
+                        if (genre != null)
+                        {
+                            existings.Genres.Add(genre);
+                        }
+                    }
+                    existings.UpdatedAt = DateTime.Now;
                     existings.Title = blogs.Title;
                     existings.Content = blogs.Content;
-                    existings.UpdatedAt = blogs.UpdatedAt;
+
                     await _BlogsRepository.Save();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -276,7 +297,7 @@ namespace BlogsProject.Controllers
         public async Task<IActionResult> Delete(int id)
         {
 
-            var blog = _BlogsRepository.GetById(id);
+            var blog =await _BlogsRepository.GetById(id);
             if (blog == null)
             {
                 return NotFound();
@@ -290,7 +311,7 @@ namespace BlogsProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var blogs = _BlogsRepository.GetById(id);
+            var blogs = await _BlogsRepository.GetById(id);
             if (blogs != null)
             {
                 _BlogsRepository.Remove(blogs);

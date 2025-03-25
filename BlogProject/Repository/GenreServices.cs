@@ -1,5 +1,7 @@
-﻿using BlogProject.Data;
+﻿using System.Threading.Tasks;
+using BlogProject.Data;
 using BlogProject.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogProject.Repository
 {
@@ -16,7 +18,11 @@ namespace BlogProject.Repository
             return _context.Genres.ToList();
         }
 
+        public async Task<Genre> GetById(int id)
+        {
+            return await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
 
+        }
 
 
 
