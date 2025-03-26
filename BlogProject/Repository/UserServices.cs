@@ -19,7 +19,7 @@ namespace BlogProject.Repository
         }
         public async Task<User> GetById(int id)
         {
-            var record = await _context.User.FirstOrDefaultAsync(x => x.Id == id);
+            var record = await _context.User.FindAsync(id);
             return record;
         }
         public User GetByUserName(string UserName)

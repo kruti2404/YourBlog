@@ -48,7 +48,7 @@ namespace BlogProject.Data
                 .HasOne(c => c.User)
                 .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.UserID)
-                .OnDelete(DeleteBehavior.NoAction); // Change this to NoAction to prevent conflict
+                .OnDelete(DeleteBehavior.Cascade); // Change this to NoAction to prevent conflict
         }
 
         public DbSet<User> User { get; set; }

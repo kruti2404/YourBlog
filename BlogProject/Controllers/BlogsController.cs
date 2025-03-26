@@ -72,7 +72,6 @@ namespace BlogsProject.Controllers
         public async Task<IActionResult> Details(int id)
         {
 
-            Console.WriteLine($"Blog ID received: {id}");
 
             Blogs blogs = await _BlogsRepository.Details(id);
             if (blogs == null)

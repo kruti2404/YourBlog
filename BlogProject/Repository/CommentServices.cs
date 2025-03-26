@@ -25,5 +25,14 @@ namespace BlogProject.Repository
                 .Where(c => c.BlogId == BlogId).CountAsync();
         }
 
+        public void RemoveRange(IEnumerable<Blogcomments> comments)
+        {
+            _context.RemoveRange(comments);
+
+        }
+        public async Task Save()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }

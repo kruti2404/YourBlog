@@ -49,7 +49,7 @@ namespace BlogProject.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("BlogProject.Models.Blogs", b =>
@@ -84,7 +84,7 @@ namespace BlogProject.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Blogs");
+                    b.ToTable("Blogs", (string)null);
                 });
 
             modelBuilder.Entity("BlogProject.Models.Genre", b =>
@@ -101,7 +101,7 @@ namespace BlogProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genres");
+                    b.ToTable("Genres", (string)null);
                 });
 
             modelBuilder.Entity("BlogProject.Models.Likes", b =>
@@ -130,7 +130,7 @@ namespace BlogProject.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Likes");
+                    b.ToTable("Likes", (string)null);
                 });
 
             modelBuilder.Entity("BlogProject.Models.User", b =>
@@ -160,7 +160,7 @@ namespace BlogProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("BlogsGenre", b =>
@@ -175,7 +175,7 @@ namespace BlogProject.Migrations
 
                     b.HasIndex("GenresId");
 
-                    b.ToTable("BlogsGenre");
+                    b.ToTable("BlogsGenre", (string)null);
                 });
 
             modelBuilder.Entity("BlogProject.Models.Blogcomments", b =>

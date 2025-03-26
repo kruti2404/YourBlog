@@ -34,6 +34,10 @@ namespace BlogProject.Repository
         {
             _context.Likes.Remove(likes);
         }
+        public void RemoveRange(IEnumerable<Likes> likes)
+        {
+            _context.Likes.RemoveRange(likes);
+        }
         public async Task Save()
         {
             await _context.SaveChangesAsync();
