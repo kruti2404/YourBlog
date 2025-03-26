@@ -32,7 +32,7 @@
 			<th>
 				@Html.DisplayNameFor(model => model.Genres)
 			</th>
-			
+
 			<th></th>
 		</tr>
 	</thead>
@@ -44,7 +44,8 @@
 					@Html.DisplayFor(modelItem => item.Title)
 				</td>
 				<td>
-					@(item.Content.Length > 100 ? item.Content.Substring(0, 100) + "..." : item.Content)
+					@Html.Raw(item.Content)
+
 				</td>
 
 				<td>
@@ -64,7 +65,7 @@
 					@String.Join(",", (item.Genres ?? new List<Genre>()).Select(g => g.Name))
 				</td>
 
-				
+
 				<td>
 					<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
 					<a asp-action="Details" asp-route-id="@item.Id">Details</a> |

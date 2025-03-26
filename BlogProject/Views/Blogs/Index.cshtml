@@ -67,7 +67,8 @@
 								<p class="card-text text-muted">
 									@if (blog.Content.Length > 100)
 									{
-										@blog.Content.Substring(0, 100)
+
+										@Html.Raw(blog.Content.Substring(0, 200))
 
 										<span>...</span>
 									}

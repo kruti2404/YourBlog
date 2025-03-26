@@ -23,7 +23,7 @@
 			<h2 class="card-title">@Model.Title</h2>
 			<p class="text-muted">Published on: @Model.CreatedAt.ToString()</p>
 			<hr />
-			<p class="card-text">@Model.Content</p>
+			<p class="card-text">@Html.Raw(Model.Content)</p>
 			<p>
 				<strong>Genres:</strong>
 				@if (Model.Genres.Any())
