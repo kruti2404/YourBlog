@@ -49,5 +49,20 @@ namespace BlogProject.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task<int> TotalBlogs(int id)
+        {
+            var TotalBlogsCount = await _context.Blogs.Where(b => b.UserId == id).CountAsync();
+            return TotalBlogsCount;
+        }
+        public async Task<int> TotalLikes(int id)
+        {
+            var TotalLikesCount = await _context.Likes.Where(l => l.UserId == id).CountAsync();
+            return TotalLikesCount;
+        }
+        public async Task<int> TotalComments(int id)
+        {
+            var TotalCommentsCount = await _context.Comments.Where(c => c.UserID == id).CountAsync();
+            return TotalCommentsCount;
+        }
     }
 }

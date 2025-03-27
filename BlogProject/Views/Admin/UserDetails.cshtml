@@ -1,9 +1,11 @@
 ﻿@model BlogProject.Models.User
-
+@inject BlogProject.Repository.UserServices _userServices;
 @{
 	ViewData["Title"] = "UserDetails";
 	Layout = "~/Views/Shared/_AdminLayout.cshtml";
-
+	var totalBlogs = await _userServices.TotalBlogs(Model.Id);
+	var totalLikes = await _userServices.TotalLikes(Model.Id);
+	var totalComments = await _userServices.TotalComments(Model.Id);
 }
 
 
@@ -11,7 +13,7 @@
 	<div class="card shadow-sm" style="max-width: 540px; margin: 0 auto;">
 		<div class="row g-0">
 			<div class="col-md-4 p-3 text-center">
-				<img src="https://www.google.com/imgres?q=profile%20image&imgurl=https%3A%2F%2Fcdn.pixabay.com%2Fphoto%2F2015%2F10%2F05%2F22%2F37%2Fblank-profile-picture-973460_960_720.png&imgrefurl=https%3A%2F%2Fpixabay.com%2Fvectors%2Fblank-profile-picture-mystery-man-973460%2F&docid=wg0CyFWNfK7o5M&tbnid=IFTclT_pNlD0eM&vet=12ahUKEwiy9efOnKeMAxXRqWMGHQzFJvEQM3oFCIABEAA..i&w=720&h=720&hcb=2&ved=2ahUKEwiy9efOnKeMAxXRqWMGHQzFJvEQM3oFCIABEAA" class="rounded-circle img-thumbnail" alt="Profile Picture">
+				<img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="rounded-circle img-thumbnail" alt="Profile Picture">
 				<div class="mt-2">
 					<span class="badge bg-success">Online</span>
 				</div>
@@ -36,15 +38,15 @@
 						<div class="row text-center">
 							<div class="col">
 								<h6>Blogs</h6>
-								<strong>25</strong>
+								<strong>@totalBlogs</strong>
 							</div>
 							<div class="col border-start">
 								<h6>Likes</h6>
-								<strong>142</strong>
+								<strong>@totalLikes</strong>
 							</div>
 							<div class="col border-start">
 								<h6>Comments</h6>
-								<strong>289</strong>
+								<strong>@totalComments</strong>
 							</div>
 						</div>
 					</div>
