@@ -7,9 +7,7 @@ using BlogProject.Repository;
 using System.Security.Claims;
 using BlogProject.Data;
 using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.Web.CodeGeneration;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+
 
 namespace BlogsProject.Controllers
 {

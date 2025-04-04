@@ -10,12 +10,12 @@ namespace BlogProject.Services
     {
 
         private readonly IConfiguration _config;
-        
 
-        public JwtServices(IConfiguration config, JwtSecurityTokenHandler tokenHandler)
+
+        public JwtServices(IConfiguration config)
         {
             _config = config;
-            
+
         }
 
         public string GenerateToken(User user)
@@ -40,7 +40,6 @@ namespace BlogProject.Services
                 );
 
             return _tokenHandler.WriteToken(token);
-
 
         }
 

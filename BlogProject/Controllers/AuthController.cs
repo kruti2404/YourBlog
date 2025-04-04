@@ -11,15 +11,11 @@ namespace BlogProject.Controllers
     public class AuthController : Controller
     {
         private JwtServices _service;
-        //private IGenericRepository<User> _UserRepository;
 
-        //private ProgramDbContext _context;
         private readonly UserServices _userServices;
         public AuthController(JwtServices services, UserServices userservices)
         {
             _service = services;
-            //_UserRepository = userRepo;
-            //_context = context;
             _userServices = userservices;
 
         }
@@ -42,8 +38,6 @@ namespace BlogProject.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(User user)
         {
-            Console.WriteLine(user.UserName);
-            Console.WriteLine(user.Password);
             if (!ModelState.IsValid)
             {
                 return View(user);
@@ -128,6 +122,19 @@ namespace BlogProject.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
+        public IActionResult SendOtp(string email)
+        {
+            Random random = new Random();
+            string Otp = random.Next(100000, 999999).ToString();
+
+
+            return View();
+        }
+        public IActionResult VarifyOtp(string Otp)
+        {
+            return View();
+        }
 
 
     }
